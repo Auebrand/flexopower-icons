@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuêBrand Icons</title>
+<style>
+  :root{
+    --dark:#0b0d10;
+    --white:#fcfdff;
+    --red:#b20b0b;
+    --red-dark:#630A0A;
+    --card:#131619;
+    --border:#22262b;
+    --muted:#9aa0a6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--dark);
+    color:var(--white);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  header{
+    padding:28px 32px 18px;
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    background:var(--dark);
+    z-index:10;
+  }
+  header h1{
+    margin:0 0 4px;
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+  }
+  header p{
+    margin:0 0 16px;
+    color:var(--muted);
+    font-size:13px;
+  }
+  .searchbar{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  #search{
+    flex:1;
+    background:var(--card);
+    border:1px solid var(--border);
+    color:var(--white);
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:14px;
+    outline:none;
+  }
+  #search:focus{border-color:var(--red);}
+  .count{
+    color:var(--muted);
+    font-size:12px;
+    white-space:nowrap;
+  }
+  main{padding:24px 32px 60px;}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+    gap:12px;
+  }
+  .icon-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    aspect-ratio:1/1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:border-color .15s ease, transform .1s ease;
+  }
+  .icon-card:hover{
+    border-color:var(--red);
+    transform:translateY(-2px);
+  }
+  .icon-card svg{width:32px;height:32px;color:var(--white);}
+  .empty{color:var(--muted);padding:40px;text-align:center;grid-column:1/-1;}
+
+  /* Modal / detail */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.65);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  .overlay.active{display:flex;}
+  .modal{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    width:100%;
+    max-width:760px;
+    max-height:90vh;
+    overflow-y:auto;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  @media (max-width:640px){
+    .modal{grid-template-columns:1fr;}
+  }
+  .preview-pane{
+    padding:32px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    border-right:1px solid var(--border);
+  }
+  @media (max-width:640px){
+    .preview-pane{border-right:none;border-bottom:1px solid var(--border);}
+  }
+  #previewBox{
+    width:180px;height:180px;
+    border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    background:
+      linear-gradient(45deg, #1a1c1f 25%, transparent 25%),
+      linear-gradient(-45deg, #1a1c1f 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #1a1c1f 75%),
+      linear-gradient(-45deg, transparent 75%, #1a1c1f 75%);
+    background-size:16px 16px;
+    background-position:0 0, 0 8px, 8px -8px, -8px 0px;
+    background-color:#0f1114;
+    border:1px solid var(--border);
+  }
+  #previewBox svg{width:96px;height:96px;}
+  #iconTitle{font-size:16px;font-weight:600;margin:0;}
+  .close-btn{
+    position:absolute;top:14px;right:14px;
+    background:transparent;border:none;color:var(--muted);
+    font-size:20px;cursor:pointer;line-height:1;
+    padding:6px;
+  }
+  .close-btn:hover{color:var(--white);}
+  .modal{position:relative;}
+
+  .controls-pane{padding:32px;display:flex;flex-direction:column;gap:22px;}
+  .section-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--muted);
+    margin:0 0 10px;
+  }
+  .swatches{display:flex;flex-wrap:wrap;gap:10px;}
+  .swatch{
+    width:38px;height:38px;
+    border-radius:10px;
+    cursor:pointer;
+    border:2px solid var(--border);
+    position:relative;
+  }
+  .swatch.active{border-color:var(--white);box-shadow:0 0 0 2px var(--dark), 0 0 0 3px var(--white);}
+  .swatch[data-c="#b20b0b"]{background:#b20b0b;}
+  .swatch[data-c="#0b0d10"]{background:#0b0d10;border-color:#3a3f45;}
+  .swatch[data-c="#fcfdff"]{background:#fcfdff;}
+  .swatch.gradient{background:linear-gradient(135deg,#b20b0b,#630A0A);}
+  .actions{display:flex;flex-direction:column;gap:10px;margin-top:auto;}
+  .btn{
+    padding:12px 16px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#1a1d21;
+    color:var(--white);
+    font-size:14px;
+    cursor:pointer;
+    text-align:center;
+    transition:background .15s;
+  }
+  .btn:hover{background:#22262b;}
+  .btn.primary{
+    background:var(--red);
+    border-color:var(--red);
+  }
+  .btn.primary:hover{background:#930909;}
+  .size-row{display:flex;align-items:center;justify-content:space-between;}
+  input[type=range]{width:100%;accent-color:var(--red);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AuêBrand Icons</h1>
+  <p>Clique em um ícone para abrir, trocar a cor e exportar.</p>
+  <div class="searchbar">
+    <input id="search" type="text" placeholder="Buscar ícone por nome...">
+    <span class="count" id="count"></span>
+  </div>
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="close-btn" id="closeBtn">&times;</button>
+    <div class="preview-pane">
+      <div id="previewBox"><svg id="previewSvg" viewBox="0 0 24 24"></svg></div>
+      <p id="iconTitle"></p>
+    </div>
+    <div class="controls-pane">
+      <div>
+        <p class="section-label">Cor</p>
+        <div class="swatches">
+          <div class="swatch active" data-c="#fcfdff" title="Branco"></div>
+          <div class="swatch" data-c="#0b0d10" title="Preto/Dark"></div>
+          <div class="swatch" data-c="#b20b0b" title="Vermelho"></div>
+          <div class="swatch gradient" data-c="gradient" title="Degradê"></div>
+        </div>
+      </div>
+      <div>
+        <div class="size-row">
+          <p class="section-label" style="margin:0;">Tamanho</p>
+          <span class="count" id="sizeLabel">128px</span>
+        </div>
+        <input type="range" id="sizeSlider" min="24" max="512" value="128">
+      </div>
+      <div class="actions">
+        <button class="btn" id="copySvgBtn">Copiar SVG</button>
+        <button class="btn primary" id="downloadSvgBtn">Baixar SVG</button>
+        <button class="btn" id="downloadPngBtn">Baixar PNG</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="icons-data.js"></script>
+<script>
+const grid = document.getElementById('grid');
+const search = document.getElementById('search');
+const countEl = document.getElementById('count');
+const overlay = document.getElementById('overlay');
+const previewSvg = document.getElementById('previewSvg');
+const previewBox = document.getElementById('previewBox');
+const iconTitle = document.getElementById('iconTitle');
+const sizeSlider = document.getElementById('sizeSlider');
+const sizeLabel = document.getElementById('sizeLabel');
+
+let current = null;
+let currentColor = '#fcfdff';
+const GRAD_ID = 'auebrand-grad';
+
+function svgTextFromB64(b64){
+  return atob(b64);
+}
+
+function render(list){
+  grid.innerHTML = '';
+  if(list.length === 0){
+    grid.innerHTML = '<div class="empty">Nenhum ícone encontrado.</div>';
+    countEl.textContent = '0 ícones';
+    return;
+  }
+  countEl.textContent = list.length + ' ícones';
+  list.forEach(([name, b64]) => {
+    const card = document.createElement('div');
+    card.className = 'icon-card';
+    card.innerHTML = svgTextFromB64(b64);
+    card.addEventListener('click', () => openModal(name, b64));
+    grid.appendChild(card);
+  });
+}
+
+function applyColorToSvg(svgEl, color){
+  if(color === 'gradient'){
+    let defs = svgEl.querySelector('defs');
+    if(!defs){
+      defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+      svgEl.insertBefore(defs, svgEl.firstChild);
+    }
+    defs.innerHTML = `<linearGradient id="${GRAD_ID}" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b20b0b"/>
+      <stop offset="100%" stop-color="#630A0A"/>
+    </linearGradient>`;
+    svgEl.style.color = `url(#${GRAD_ID})`;
+    svgEl.setAttribute('stroke', `url(#${GRAD_ID})`);
+  } else {
+    svgEl.style.color = color;
+    svgEl.setAttribute('stroke', color);
+  }
+}
+
+function openModal(name, b64){
+  current = {name, b64};
+  currentColor = '#fcfdff';
+  iconTitle.textContent = name;
+  previewSvg.outerHTML = svgTextFromB64(b64).replace('<svg', '<svg id="previewSvg"');
+  const svgEl = document.getElementById('previewSvg');
+  const size = sizeSlider.value;
+  svgEl.setAttribute('width', size);
+  svgEl.setAttribute('height', size);
+  document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.c === '#fcfdff'));
+  applyColorToSvg(svgEl, currentColor);
+  overlay.classList.add('active');
+}
+
+function closeModal(){
+  overlay.classList.remove('active');
+  current = null;
+}
+
+document.getElementById('closeBtn').addEventListener('click', closeModal);
+overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+
+document.querySelectorAll('.swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    currentColor = sw.dataset.c;
+    const svgEl = document.getElementById('previewSvg');
+    if(svgEl) applyColorToSvg(svgEl, currentColor);
+  });
+});
+
+sizeSlider.addEventListener('input', () => {
+  sizeLabel.textContent = sizeSlider.value + 'px';
+  const svgEl = document.getElementById('previewSvg');
+  if(svgEl){
+    svgEl.setAttribute('width', sizeSlider.value);
+    svgEl.setAttribute('height', sizeSlider.value);
+  }
+});
+
+document.getElementById('copySvgBtn').addEventListener('click', () => {
+  const svgEl = document.getElementById('previewSvg');
+  navigator.clipboard.writeText(svgEl.outerHTML).then(() => {
+    const btn = document.getElementById('copySvgBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Copiado!';
+    setTimeout(() => btn.textContent = old, 1200);
+  });
+});
+
+document.getElementById('downloadSvgBtn').addEventListener('click', () => {
+  if(!current) return;
+  const svgEl = document.getElementById('previewSvg');
+  const blob = new Blob([svgEl.outerHTML], {type:'image/svg+xml'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = current.name + '.svg';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('downloadPngBtn').addEventListener('click', () => {
+  if(!current) return;
+  const svgEl = document.getElementById('previewSvg');
+  const size = parseInt(sizeSlider.value, 10) || 512;
+  const svgData = svgEl.outerHTML;
+  const img = new Image();
+  const svgBlob = new Blob([svgData], {type:'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(svgBlob);
+  img.onload = function(){
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, size, size);
+    URL.revokeObjectURL(url);
+    canvas.toBlob((blob) => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = current.name + '.png';
+      a.click();
+    });
+  };
+  img.src = url;
+});
+
+search.addEventListener('input', () => {
+  const q = search.value.trim().toLowerCase();
+  const filtered = ICONS.filter(([name]) => name.toLowerCase().includes(q));
+  render(filtered);
+});
+
+render(ICONS);
+</script>
+</body>
+</html>
